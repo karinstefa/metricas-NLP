@@ -109,3 +109,31 @@ for i in range(len(q)):
     f.write(f'q{i+1:02} {q[i]}\n')
 f.close()
 # %%
+
+def BSII_OR(lista_busqueda):
+    if len(lista_busqueda) == 0:
+        return ''
+    if len(lista_busqueda) == 1:
+        listaA = indice_invertido[lista_busqueda[0]]
+        return ','.join([f'd{x:03}' for x in listaA])
+    else:
+        listaA = indice_invertido[lista_busqueda[0]].copy()
+        for i in range(1,len(lista_busqueda)):
+            if lista_busqueda[i] in indice_invertido:
+                listaB = indice_invertido[lista_busqueda[i]]
+                listaC =  listaA.copy()+listaB.copy()
+                listaA = listaC.copy()
+            else:
+                return ''
+        listaA = np.unique(listaA)        
+        return ','.join([f'd{x:03}' for x in listaA])
+
+# %%
+q_or=quer_proc.filtrada.apply(BSII_OR)
+
+# %%
+f = open("salida/BSII-OR-queries_results.txt", "w")
+for i in range(len(q_or)):
+    f.write(f'q{i+1:02} {q_or[i]}\n')
+f.close()
+# %%
