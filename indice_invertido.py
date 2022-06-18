@@ -66,8 +66,8 @@ a_file = open("salida/indice_invertido.json", "w")
 json.dump(indice_invertido, a_file)
 a_file.close()
 #%% read dict from file
-#a_file = open("salida/indice_invertido.json", "r")
-#indice_invertido = a_file.read()
+a_file = open("salida/indice_invertido.json", "r")
+indice_invertido = json.loads(a_file.read())
 #%%
 datos_querry = get_documents('datos/queries-raw-texts/')
 queries = pd.DataFrame(datos_querry,columns=['Query'])
