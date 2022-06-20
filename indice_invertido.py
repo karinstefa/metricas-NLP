@@ -60,6 +60,8 @@ for i in range(len(doc_proc)):
         if doc_proc.iloc[i]['filtrada'][j] not in indice_invertido:
             indice_invertido[doc_proc.iloc[i]['filtrada'][j]] = []
         indice_invertido[doc_proc.iloc[i]['filtrada'][j]].append(i+1)
+        print(f'llave: {doc_proc.iloc[i]["filtrada"][j]} val: {indice_invertido[doc_proc.iloc[i]["filtrada"][j]]}')
+
 #%% save dict to file
 import json
 a_file = open("salida/indice_invertido.json", "w")
@@ -85,7 +87,7 @@ def BSII_AND(lista_busqueda):
     if len(lista_busqueda) == 0:
         return ''
     if len(lista_busqueda) == 1:
-        listaA = indice_invertido[lista_busqueda[0]]
+        listaA = indice_invertido[lista_busqueda[0]]#lista de la interseccion entre indice invertido y la lista palabras (queries)
         return ','.join([f'd{x:03}' for x in listaA])
     else:
         listaA = indice_invertido[lista_busqueda[0]].copy()
@@ -123,8 +125,6 @@ def BSII_OR(lista_busqueda):
                 listaB = indice_invertido[lista_busqueda[i]]
                 listaC =  listaA.copy()+listaB.copy()
                 listaA = listaC.copy()
-            else:
-                return ''
         listaA = np.unique(listaA)        
         return ','.join([f'd{x:03}' for x in listaA])
 
@@ -137,3 +137,35 @@ for i in range(len(q_or)):
     f.write(f'q{i+1:02} {q_or[i]}\n')
 f.close()
 # %%
+def BSII_NOT(lista_busqueda):
+    listaCompleta= list(range(1,332))
+    if len(lista_busqueda) == 0:
+        return ','.join([f'd{x:03}' for x in listaCompleta])
+    if len(lista_busqueda) == 1:
+        listaA = indice_invertido[lista_busqueda[0]]
+        for elem in listaA:
+            listaCompleta.remove(elem)
+        return ','.join([f'd{x:03}' for x in listaCompleta])
+    else:
+        listaA = indice_invertido[lista_busqueda[0]].copy()
+        for i in range(1,len(lista_busqueda)):
+            if lista_busqueda[i] in indice_invertido:
+                listaB = indice_invertido[lista_busqueda[i]]
+                listaC =  listaA.copy()+listaB.copy()
+                listaA = listaC.copy()
+
+        listaA = np.unique(listaA)  
+        
+        for elem in listaA:
+            listaCompleta.remove(elem)
+        return ','.join([f'd{x:03}' for x in listaCompleta])
+        
+# %%
+q_not=quer_proc.filtrada.apply(BSII_NOT)
+
+# %%
+f = open("salida/BSII-NOT-queries_results.txt", "w")
+for i in range(len(q_not)):
+    f.write(f'q{i+1:02} {q_not[i]}\n')
+f.close()      
+#%%
